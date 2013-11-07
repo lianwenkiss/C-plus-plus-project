@@ -1,0 +1,123 @@
+#include <iostream>
+#include<fstream>
+#include<string>
+using namespace std;
+
+class node{
+    string     charstring;
+    int prob;
+    node* left;
+    node* right;
+    node* next;
+    node* head;
+
+    public:
+    node(int x, string c){
+        left=NULL;
+        right=NULL;
+        next=NULL;
+        charstring=c;
+        prob=x;}
+    node(){
+        next=new node(-1, "null");
+        prob=0;}
+    node* getNext(){return next;}
+    node* getleft(){return left;}
+    node* getright(){return right;}
+    node* setleft(node* l){left = l;}
+    node* setright(node* r){right=r;}
+    void setNext(node* n){next = n;}
+    string getcharstring(){return charstring;}
+    void setcharstring(string s){charstring=s;}
+    int getprob(){return prob;}
+    void setprob(int x){prob=x;}
+};
+class LinkedList{
+    public:
+    LinkedList(){};
+    void insertionSort(node *n,int prob, string c){
+        node* cur=n;
+        node* x = new node(prob, c);
+        if(cur->getNext()==NULL){
+        cur->setNext(x);}
+        else{
+        while(cur->getNext()!=NULL && prob>(cur->getNext()->getprob())){
+        cur=cur->getNext();}
+        x->setNext(cur->getNext());
+        cur->setNext(x);
+        }
+    }
+    void tree(node *t){
+    	node* head = new node();
+    	head->setNext(t->getNext()->getNext());
+    	node* x = new node();
+    	while(head->getNext()->getNext()!=NULL){
+    		x->setleft(head->getNext());
+    		x->setright(head->getNext()->getNext());
+    		int p;
+    		p = head->getNext()->getprob()+head->getNext()->getNext()->getprob();
+    		x->setprob(p);
+    		string s;
+    		s+=head->getNext()->getcharstring();
+    		s+=head->getNext()->getNext()->getcharstring();
+    		x->setcharstring(s);
+    		cout<<"("<<x->getcharstring()<<","<<x->getprob()<<")::left kid("<<head->getNext()->getcharstring()<<","<<head->getNext()->getprob()<<")::right kid ("<<head->getNext()->getNext()->getcharstring()<<","<<head->getNext()->getNext()->getprob()<<")"<<endl;
+    		head = head->getNext()->getNext();
+    		print(head);
+    		cout<<endl;
+    		insertionSort(head, p, s);
+    		print(head);
+    		cout<<endl;
+    	}
+    }
+    void print(node *x){
+    node* next=x;
+    next=next->getNext();
+    while(next!=NULL){
+        cout<<"("<<next->getcharstring()<<","<<next->getprob()<<")->";
+        next=next->getNext();
+    }
+    cout<<"null";
+    }    
+};    
+int main(){
+    LinkedList list;
+    node *h = new node();     
+    ifstream myfile;
+    myfile.open("Project5.txt");
+    while(!myfile.eof()){
+        int n;
+        string s;
+        myfile>>s>>n;
+        list.insertionSort(h,n,s);
+    }
+    cout<<"List: ";
+    list.print(h);
+    cout<<endl;      
+    cout<<"Constructing the tree: "<<endl;
+    list.tree(h);
+    myfile.close();
+}
+
+
+Output:
+List: (null,-1)->(b,1)->(a,1)->(c,2)->(d,6)->(e,10)->(f,30)->(g,50)->null
+Constructing the tree: 
+(ba,2)::left kid(b,1)::right kid (a,1)
+(c,2)->(d,6)->(e,10)->(f,30)->(g,50)->null
+(ba,2)->(c,2)->(d,6)->(e,10)->(f,30)->(g,50)->null
+(bac,4)::left kid(ba,2)::right kid (c,2)
+(d,6)->(e,10)->(f,30)->(g,50)->null
+(bac,4)->(d,6)->(e,10)->(f,30)->(g,50)->null
+(bacd,10)::left kid(bac,4)::right kid (d,6)
+(e,10)->(f,30)->(g,50)->null
+(bacd,10)->(e,10)->(f,30)->(g,50)->null
+(bacde,20)::left kid(bacd,10)::right kid (e,10)
+(f,30)->(g,50)->null
+(bacde,20)->(f,30)->(g,50)->null
+(bacdef,50)::left kid(bacde,20)::right kid (f,30)
+(g,50)->null
+(bacdef,50)->(g,50)->null
+(bacdefg,100)::left kid(bacdef,50)::right kid (g,50)
+null
+(bacdefg,100)->null
